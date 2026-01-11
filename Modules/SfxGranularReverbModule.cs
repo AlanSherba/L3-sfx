@@ -35,6 +35,10 @@ public class SfxGranularReverbModule : SfxEffectModule
 
     public override bool hasProcessAudioMethod => true;
 
+    // Tail time scales with buffer length and feedback
+    // Higher feedback means longer decay, so we extend the tail accordingly
+    public override float tailTime => bufferLength + bufferLength * feedback * 5f;
+
     // Runtime state - managed per-player instance
     private float[] buffer;
     private int bufferWritePos;
@@ -80,18 +84,25 @@ public class SfxGranularReverbModule : SfxEffectModule
         float grainInterval = grainSize / grainCount;
         int grainIntervalSamples = Mathf.CeilToInt(grainInterval * sampleRate);
 
-        for (int i = 0; i < data.Length; i += channels)
+        int dataLen = data.Length;
+
+        for (int i = 0; i < dataLen; i += channels)
         {
             // Get input sample (mono mix for buffer)
             float inputSample = 0f;
             for (int c = 0; c < channels; c++)
             {
-                inputSample += data[i + c];
+                int idx = i + c;
+                if (idx < dataLen)
+                    inputSample += data[idx];
             }
             inputSample /= channels;
 
             // Write to circular buffer
-            buffer[bufferWritePos] = inputSample;
+            if (bufferWritePos >= 0 && bufferWritePos < bufferSize)
+            {
+                buffer[bufferWritePos] = inputSample;
+            }
             bufferWritePos = (bufferWritePos + 1) % bufferSize;
 
             // Trigger new grains
@@ -114,10 +125,16 @@ public class SfxGranularReverbModule : SfxEffectModule
                 float envelope = progress < 0.5f ? progress * 2f : (1f - progress) * 2f;
 
                 // Read from buffer with interpolation
-                int readIndex = (int)grains[g].readPos;
-                float frac = grains[g].readPos - readIndex;
-                readIndex = ((readIndex % bufferSize) + bufferSize) % bufferSize;
+                int readIndexBase = (int)grains[g].readPos;
+                float frac = grains[g].readPos - readIndexBase;
+                int readIndex = ((readIndexBase % bufferSize) + bufferSize) % bufferSize;
+
+                // Clamp for safety
+                if (readIndex < 0) readIndex = 0;
+                if (readIndex >= bufferSize) readIndex = bufferSize - 1;
                 int nextIndex = (readIndex + 1) % bufferSize;
+                if (nextIndex < 0) nextIndex = 0;
+                if (nextIndex >= bufferSize) nextIndex = bufferSize - 1;
 
                 float sample = buffer[readIndex] * (1f - frac) + buffer[nextIndex] * frac;
                 wetSample += sample * envelope;
@@ -136,13 +153,20 @@ public class SfxGranularReverbModule : SfxEffectModule
             wetSample /= Mathf.Max(1, grainCount * 0.5f);
 
             // Feedback into buffer
-            buffer[((bufferWritePos - 1) + bufferSize) % bufferSize] += wetSample * feedback;
+            int feedIdx = ((bufferWritePos - 1) + bufferSize) % bufferSize;
+            if (feedIdx < 0) feedIdx = 0;
+            if (feedIdx >= bufferSize) feedIdx = bufferSize - 1;
+            buffer[feedIdx] += wetSample * feedback;
 
             // Mix dry and wet
             for (int c = 0; c < channels; c++)
             {
-                float dry = data[i + c];
-                data[i + c] = dry * (1f - mix) + wetSample * mix;
+                int dataIdx = i + c;
+                if (dataIdx < dataLen)
+                {
+                    float dry = data[dataIdx];
+                    data[dataIdx] = dry * (1f - mix) + wetSample * mix;
+                }
             }
         }
     }
@@ -158,6 +182,7 @@ public class SfxGranularReverbModule : SfxEffectModule
             {
                 // Random position in buffer (behind write position)
                 int maxOffset = Mathf.Min(bufferSize - grainSamples, bufferSize);
+                maxOffset = Mathf.Max(0, maxOffset);
                 int offset = sysRand.Next(0, maxOffset);
                 float startPos = (bufferWritePos - offset + bufferSize) % bufferSize;
 
@@ -181,6 +206,7 @@ public class SfxGranularReverbModule : SfxEffectModule
         // All slots full - steal oldest
         grainIndex = (grainIndex + 1) % grains.Length;
         int maxOffset2 = Mathf.Min(bufferSize - grainSamples, bufferSize);
+        maxOffset2 = Mathf.Max(0, maxOffset2);
         int offset2 = sysRand.Next(0, maxOffset2);
         float startPos2 = (bufferWritePos - offset2 + bufferSize) % bufferSize;
         float pitchMult2 = 1f + ((float)sysRand.NextDouble() * 2f - 1f) * pitchVariation;

@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-4959266212972791216
+--- !u!114 &-3488255081543849089
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -9,14 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f70e784db2614d46a8f7ceb27d58eb6, type: 3}
-  m_Name: SfxSpatializerModule
+  m_Script: {fileID: 11500000, guid: 955330dbe3a3894478ee774ff0a3d6cb, type: 3}
+  m_Name: SfxReverbModule
   m_EditorClassIdentifier: 
   enabled: 1
-  spatialBlend: 1
-  minDistance: 1
-  maxDistance: 500
-  rolloffMode: 0
+  roomSize: 0.5
+  damping: 0.5
+  width: 1
+  mix: 0.3
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -30,13 +30,11 @@ MonoBehaviour:
   m_Name: New Sfx 1
   m_EditorClassIdentifier: 
   clips:
-  - {fileID: 8300000, guid: cbded17ca66c4e8459ef4bdc0846e748, type: 3}
-  - {fileID: 8300000, guid: 081e714377c4c284da600a0f67601319, type: 3}
-  - {fileID: 8300000, guid: 6b6001ed991785d44a2e7c667511c5a0, type: 3}
+  - {fileID: 8300000, guid: 6e6e365248ebf00468d3572bf47e730b, type: 3}
   effectModules:
-  - {fileID: -4959266212972791216}
-  - {fileID: 1916242625983979348}
---- !u!114 &1916242625983979348
+  - {fileID: 8854488491453390452}
+  - {fileID: -3488255081543849089}
+--- !u!114 &8854488491453390452
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -45,13 +43,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e55e961919d6c65428afca87319400c3, type: 3}
-  m_Name: SfxGranularReverbModule
+  m_Script: {fileID: 11500000, guid: e7baf84d9a80e7648a88ff1c754cac91, type: 3}
+  m_Name: SfxRandomizeModule
   m_EditorClassIdentifier: 
   enabled: 1
-  grainSize: 0.05
-  grainCount: 8
-  pitchVariation: 0.1
-  bufferLength: 0.5
-  feedback: 0.3
-  mix: 0.5
+  volumeMin: 1
+  volumeMax: 1
+  pitchMin: 0.775
+  pitchMax: 1.826

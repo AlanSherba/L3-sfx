@@ -93,13 +93,13 @@ public class SfxEditor : Editor
             var moveUpButton = moduleElement.Q<Button>("MoveUp");
             moveUpButton.clicked += () =>
             {
-                //TODO MoveModuleUp(capturedIndex);
+                MoveModule(capturedIndex, -1);
                 RebuildModulesList();
             };
             var moveDownButton = moduleElement.Q<Button>("MoveDown");
             moveDownButton.clicked += () =>
             {
-                //TODO MoveModuleDown(capturedIndex);
+                MoveModule(capturedIndex, 1);
                 RebuildModulesList();
             };
 
@@ -164,6 +164,23 @@ public class SfxEditor : Editor
         {
             ScriptableObject.DestroyImmediate(module, true);
         }
+
+        EditorUtility.SetDirty(sfx);
+        AssetDatabase.SaveAssetIfDirty(sfx);
+    }
+
+    private void MoveModule(int index, int direction)
+    {
+        serializedObject.Update();
+
+        var effectModulesProperty = serializedObject.FindProperty("effectModules");
+        int newIndex = index + direction;
+
+        if (newIndex < 0 || newIndex >= effectModulesProperty.arraySize)
+            return;
+
+        effectModulesProperty.MoveArrayElement(index, newIndex);
+        serializedObject.ApplyModifiedProperties();
 
         EditorUtility.SetDirty(sfx);
         AssetDatabase.SaveAssetIfDirty(sfx);

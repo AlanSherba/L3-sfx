@@ -1,0 +1,91 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-8646893067733301957
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7baf84d9a80e7648a88ff1c754cac91, type: 3}
+  m_Name: SfxRandomizeModule
+  m_EditorClassIdentifier: 
+  enabled: 1
+  volumeMin: 0.8
+  volumeMax: 1
+  pitchMin: 0.95
+  pitchMax: 1.05
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9d975b117a566a84fafa3dbcc03387db, type: 3}
+  m_Name: New Sfx 2
+  m_EditorClassIdentifier: 
+  clips:
+  - {fileID: 8300000, guid: 6e6e365248ebf00468d3572bf47e730b, type: 3}
+  effectModules:
+  - {fileID: -8646893067733301957}
+  - {fileID: 1916242625983979348}
+  - {fileID: 6251637454611173277}
+  - {fileID: 1434400625663014246}
+--- !u!114 &1434400625663014246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f70e784db2614d46a8f7ceb27d58eb6, type: 3}
+  m_Name: SfxSpatializerModule
+  m_EditorClassIdentifier: 
+  enabled: 1
+  spatialBlend: 1
+  minDistance: 1
+  maxDistance: 500
+  rolloffMode: 0
+--- !u!114 &1916242625983979348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e55e961919d6c65428afca87319400c3, type: 3}
+  m_Name: SfxGranularReverbModule
+  m_EditorClassIdentifier: 
+  enabled: 0
+  grainSize: 0.2
+  grainCount: 7
+  pitchVariation: 0.764
+  bufferLength: 2
+  feedback: 0.809
+  mix: 1
+--- !u!114 &6251637454611173277
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 955330dbe3a3894478ee774ff0a3d6cb, type: 3}
+  m_Name: SfxReverbModule
+  m_EditorClassIdentifier: 
+  enabled: 1
+  roomSize: 0.119
+  damping: 1
+  width: 0.91
+  mix: 0.859

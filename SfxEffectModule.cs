@@ -13,6 +13,12 @@ public abstract class SfxEffectModule : ScriptableObject
     public virtual bool hasInitMethod => false;
     public virtual bool hasProcessAudioMethod => false;
 
+    /// <summary>
+    /// Extra time in seconds to keep processing audio after the clip ends.
+    /// Used for effects with tails like reverb or delay.
+    /// </summary>
+    public virtual float tailTime => 0f;
+
     public virtual void InitAudioSource(AudioSource audioSource) { }
     public virtual void ProcessAudio(float[] data, int channels) { }
 }
