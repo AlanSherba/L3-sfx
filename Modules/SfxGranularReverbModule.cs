@@ -147,6 +147,7 @@ public class SfxGranularReverbModule : SfxEffectModule
         }
     }
 
+    private static readonly System.Random sysRand = new System.Random();
     private void TriggerGrain(int grainSamples)
     {
         // Find inactive grain slot
@@ -157,11 +158,11 @@ public class SfxGranularReverbModule : SfxEffectModule
             {
                 // Random position in buffer (behind write position)
                 int maxOffset = Mathf.Min(bufferSize - grainSamples, bufferSize);
-                int offset = Random.Range(grainSamples, maxOffset);
+                int offset = sysRand.Next(0, maxOffset);
                 float startPos = (bufferWritePos - offset + bufferSize) % bufferSize;
 
                 // Random pitch variation
-                float pitchMult = 1f + Random.Range(-pitchVariation, pitchVariation);
+                float pitchMult = 1f + ((float)sysRand.NextDouble() * 2f - 1f) * pitchVariation;
 
                 grains[idx] = new Grain
                 {
@@ -180,9 +181,9 @@ public class SfxGranularReverbModule : SfxEffectModule
         // All slots full - steal oldest
         grainIndex = (grainIndex + 1) % grains.Length;
         int maxOffset2 = Mathf.Min(bufferSize - grainSamples, bufferSize);
-        int offset2 = Random.Range(grainSamples, maxOffset2);
+        int offset2 = sysRand.Next(0, maxOffset2);
         float startPos2 = (bufferWritePos - offset2 + bufferSize) % bufferSize;
-        float pitchMult2 = 1f + Random.Range(-pitchVariation, pitchVariation);
+        float pitchMult2 = 1f + ((float)sysRand.NextDouble() * 2f - 1f) * pitchVariation;
 
         grains[grainIndex] = new Grain
         {

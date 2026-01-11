@@ -35,3 +35,23 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 6b6001ed991785d44a2e7c667511c5a0, type: 3}
   effectModules:
   - {fileID: -4959266212972791216}
+  - {fileID: 1916242625983979348}
+--- !u!114 &1916242625983979348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e55e961919d6c65428afca87319400c3, type: 3}
+  m_Name: SfxGranularReverbModule
+  m_EditorClassIdentifier: 
+  enabled: 1
+  grainSize: 0.05
+  grainCount: 8
+  pitchVariation: 0.1
+  bufferLength: 0.5
+  feedback: 0.3
+  mix: 0.5
