@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-3287149068536413630
+--- !u!114 &-4959266212972791216
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -13,12 +13,10 @@ MonoBehaviour:
   m_Name: SfxSpatializerModule
   m_EditorClassIdentifier: 
   enabled: 1
-  spatialBlend: 0
+  spatialBlend: 1
   minDistance: 1
-  maxDistance: 6.6
-  rolloffMode: 1
-  spread: 0
-  dopplerLevel: 0.64
+  maxDistance: 500
+  rolloffMode: 0
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36,4 +34,4 @@ MonoBehaviour:
   - {fileID: 8300000, guid: 081e714377c4c284da600a0f67601319, type: 3}
   - {fileID: 8300000, guid: 6b6001ed991785d44a2e7c667511c5a0, type: 3}
   effectModules:
-  - {fileID: -3287149068536413630}
+  - {fileID: -4959266212972791216}

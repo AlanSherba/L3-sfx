@@ -1,9 +1,9 @@
-using UnityEngine;
-using UnityEditor;
-using UnityEngine.UIElements;
-using UnityEditor.UIElements;
-using Less3.TypeTree.Editor;
 using System;
+using Less3.TypeTree.Editor;
+using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 [CustomEditor(typeof(Sfx))]
 public class SfxEditor : Editor
@@ -11,27 +11,21 @@ public class SfxEditor : Editor
     private Sfx sfx;
     private VisualElement modulesContainer;
 
+    public VisualTreeAsset rootAsset;
+    public VisualTreeAsset moduleElementAsset;
+
     public override VisualElement CreateInspectorGUI()
     {
         sfx = (Sfx)target;
 
-        var root = new VisualElement();
+        var root = rootAsset.CloneTree();
+        var clipsContainer = root.Q<VisualElement>("ClipsContainer");
 
         // Clips property
         var clipsProperty = serializedObject.FindProperty("clips");
         var clipsField = new PropertyField(clipsProperty);
         clipsField.Bind(serializedObject);
-        root.Add(clipsField);
-
-        // Spacer
-        root.Add(new VisualElement { style = { height = 10 } });
-
-        // Effect Modules header
-        var header = new Label("Effect Modules");
-        header.style.unityFontStyleAndWeight = FontStyle.Bold;
-        header.style.marginTop = 10;
-        header.style.marginBottom = 5;
-        root.Add(header);
+        clipsContainer.Add(clipsField);
 
         // Modules container
         modulesContainer = new VisualElement();
@@ -53,6 +47,8 @@ public class SfxEditor : Editor
         addButton.text = "Add Module";
         addButton.style.height = 32;
         addButton.style.marginTop = 24;
+        addButton.style.marginLeft = 12;
+        addButton.style.marginRight = 12;
         root.Add(addButton);
 
         return root;
@@ -75,60 +71,45 @@ public class SfxEditor : Editor
 
             int capturedIndex = i;
 
-            // Module container
-            var moduleBox = new VisualElement();
-            moduleBox.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.3f);
-            moduleBox.style.borderTopLeftRadius = 4;
-            moduleBox.style.borderTopRightRadius = 4;
-            moduleBox.style.borderBottomLeftRadius = 4;
-            moduleBox.style.borderBottomRightRadius = 4;
-            moduleBox.style.paddingTop = 6;
-            moduleBox.style.paddingBottom = 6;
-            moduleBox.style.paddingLeft = 8;
-            moduleBox.style.paddingRight = 8;
-            moduleBox.style.marginBottom = 4;
-
-            // Header row
-            var headerRow = new VisualElement();
-            headerRow.style.flexDirection = FlexDirection.Row;
-            headerRow.style.justifyContent = Justify.SpaceBetween;
-            headerRow.style.alignItems = Align.Center;
-
-            // Enabled toggle + name
             var moduleSerializedObject = new SerializedObject(module);
+
+            var moduleElement = moduleElementAsset.CloneTree();
+            var inspectorContainer = moduleElement.Q<VisualElement>("InspectorContainer");
+
+            moduleElement.Q<Label>("ModuleName").text = module.displayName;
+
             var enabledProperty = moduleSerializedObject.FindProperty("enabled");
-            var enabledToggle = new Toggle();
-            enabledToggle.value = enabledProperty.boolValue;
-            enabledToggle.RegisterValueChangedCallback(evt =>
+            var toggle = moduleElement.Q<Toggle>("Toggle");
+            toggle.value = module.enabled;
+            inspectorContainer.SetEnabled(module.enabled);
+            toggle.RegisterValueChangedCallback(evt =>
             {
                 moduleSerializedObject.Update();
                 enabledProperty.boolValue = evt.newValue;
                 moduleSerializedObject.ApplyModifiedProperties();
+                inspectorContainer.SetEnabled(evt.newValue);
             });
 
-            var nameLabel = new Label(module.GetType().Name);
-            nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-            nameLabel.style.marginLeft = 4;
+            var moveUpButton = moduleElement.Q<Button>("MoveUp");
+            moveUpButton.clicked += () =>
+            {
+                //TODO MoveModuleUp(capturedIndex);
+                RebuildModulesList();
+            };
+            var moveDownButton = moduleElement.Q<Button>("MoveDown");
+            moveDownButton.clicked += () =>
+            {
+                //TODO MoveModuleDown(capturedIndex);
+                RebuildModulesList();
+            };
 
-            var leftGroup = new VisualElement();
-            leftGroup.style.flexDirection = FlexDirection.Row;
-            leftGroup.style.alignItems = Align.Center;
-            leftGroup.Add(enabledToggle);
-            leftGroup.Add(nameLabel);
-
-            // Remove button
-            var removeButton = new Button(() =>
+            var removeButton = moduleElement.Q<Button>("Delete");
+            removeButton.clicked += () =>
             {
                 RemoveModule(capturedIndex);
                 RebuildModulesList();
-            });
-            removeButton.text = "X";
-            removeButton.style.width = 24;
-            removeButton.style.height = 20;
+            };
 
-            headerRow.Add(leftGroup);
-            headerRow.Add(removeButton);
-            moduleBox.Add(headerRow);
 
             // Module properties (excluding 'enabled' and 'm_Script')
             var prop = moduleSerializedObject.GetIterator();
@@ -139,12 +120,12 @@ public class SfxEditor : Editor
                 {
                     var field = new PropertyField(prop);
                     field.Bind(moduleSerializedObject);
-                    field.style.marginTop = 4;
-                    moduleBox.Add(field);
+                    field.style.marginTop = 0;
+                    inspectorContainer.Add(field);
                 }
             }
 
-            modulesContainer.Add(moduleBox);
+            modulesContainer.Add(moduleElement);
         }
     }
 

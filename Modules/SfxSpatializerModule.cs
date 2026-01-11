@@ -4,7 +4,9 @@ using UnityEngine;
 [TypeTreeMenu(typeof(Sfx), "Spatializer")]
 public class SfxSpatializerModule : SfxEffectModule
 {
-    [Header("Spatial Blend")]
+    public override string displayName => "Spatializer";
+
+    
     [Range(0f, 1f)]
     [Tooltip("0 = 2D, 1 = 3D")]
     public float spatialBlend = 1f;
@@ -14,14 +16,6 @@ public class SfxSpatializerModule : SfxEffectModule
     public float maxDistance = 500f;
     public AudioRolloffMode rolloffMode = AudioRolloffMode.Logarithmic;
 
-    [Header("Spread")]
-    [Range(0f, 360f)]
-    public float spread = 0f;
-
-    [Header("Doppler")]
-    [Range(0f, 5f)]
-    public float dopplerLevel = 1f;
-
     public override bool hasInitMethod => true;
 
     public override void InitAudioSource(AudioSource audioSource)
@@ -30,7 +24,7 @@ public class SfxSpatializerModule : SfxEffectModule
         audioSource.minDistance = minDistance;
         audioSource.maxDistance = maxDistance;
         audioSource.rolloffMode = rolloffMode;
-        audioSource.spread = spread;
-        audioSource.dopplerLevel = dopplerLevel;
+        audioSource.spread = 0f;
+        audioSource.dopplerLevel = 0f;
     }
 }

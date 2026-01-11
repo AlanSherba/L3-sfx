@@ -1,0 +1,5 @@
+<engine:UXML xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:engine="UnityEngine.UIElements" xmlns:editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="True">
+    <Style src="project://database/Assets/L3-sfx/VisualElements/SfxEditorUSS.uss?fileID=7433441132597879392&amp;guid=7c39abe3ac76d4d4d9396a0921ae0160&amp;type=3#SfxEditorUSS" />
+    <engine:VisualElement name="ClipsContainer" />
+    <engine:VisualElement name="Spacer" style="flex-grow: 0; height: 1px; margin-top: 16px; margin-bottom: 16px; background-color: rgba(255, 255, 255, 0.15); margin-right: 0; margin-left: 0;" />
+</engine:UXML>

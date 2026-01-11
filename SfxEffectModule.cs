@@ -6,6 +6,7 @@ using UnityEngine;
 /// </summary>
 public abstract class SfxEffectModule : ScriptableObject
 {
+    public virtual string displayName => GetType().Name;
     public bool enabled = true;
     
     // These bools should be set to true only if the methods below are implemented.
