@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1233149941 &-4359748618014221959
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: foot_mud_2_{-4359748618014221959}
+  m_AudioClip: {fileID: 8300000, guid: 081e714377c4c284da600a0f67601319, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &1765750398549733924
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: foot_mud_1_{1765750398549733924}
+  m_AudioClip: {fileID: 8300000, guid: cbded17ca66c4e8459ef4bdc0846e748, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1307931743 &6418180475301049370
+AudioRandomContainer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: New Audio Random Container
+  m_Volume: 0
+  m_Pitch: 0
+  m_AutomaticTriggerTime: 0.1
+  m_LoopCount: 1
+  m_VolumeRandomizationRange: {x: 0, y: 0}
+  m_PitchRandomizationRange: {x: 0, y: 0}
+  m_AutomaticTriggerTimeRandomizationRange: {x: -0.1, y: 0.2}
+  m_LoopCountRandomizationRange: {x: 0, y: 0}
+  m_Elements:
+  - {fileID: 1765750398549733924}
+  - {fileID: -4359748618014221959}
+  - {fileID: 6537478654415306419}
+  - {fileID: 8968267279962583008}
+  m_AvoidRepeatingLast: 0
+  m_PlaybackMode: 2
+  m_TriggerMode: 0
+  m_AutomaticTriggerMode: 0
+  m_LoopMode: 0
+  m_VolumeRandomizationEnabled: 0
+  m_PitchRandomizationEnabled: 0
+  m_AutomaticTriggerTimeRandomizationEnabled: 1
+  m_LoopCountRandomizationEnabled: 0
+--- !u!1233149941 &6537478654415306419
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: foot_mud_3_{6537478654415306419}
+  m_AudioClip: {fileID: 8300000, guid: 6b6001ed991785d44a2e7c667511c5a0, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
+--- !u!1233149941 &8968267279962583008
+AudioContainerElement:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: foot_mud_4_{8968267279962583008}
+  m_AudioClip: {fileID: 8300000, guid: 055b88ef38b66494b8acd9fc15a66808, type: 3}
+  m_Volume: 0
+  m_Enabled: 1
