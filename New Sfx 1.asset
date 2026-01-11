@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: SfxSpatializerModule
   m_EditorClassIdentifier: 
   enabled: 1
-  spatialBlend: 1
+  spatialBlend: 0
   minDistance: 1
-  maxDistance: 500
-  rolloffMode: 0
+  maxDistance: 6.6
+  rolloffMode: 1
   spread: 0
-  dopplerLevel: 1
+  dopplerLevel: 0.64
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,76 +1,70 @@
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.UIElements;
+using UnityEditor.UIElements;
+using Less3.TypeTree.Editor;
 using System;
-using System.Linq;
-using System.Collections.Generic;
 
 [CustomEditor(typeof(Sfx))]
 public class SfxEditor : Editor
 {
     private Sfx sfx;
-    private SerializedProperty clipsProperty;
-    private SerializedProperty effectModulesProperty;
+    private VisualElement modulesContainer;
 
-    private static Type[] cachedModuleTypes;
-    private static string[] cachedModuleTypeNames;
-    private int selectedModuleIndex = 0;
-
-    private void OnEnable()
+    public override VisualElement CreateInspectorGUI()
     {
         sfx = (Sfx)target;
-        clipsProperty = serializedObject.FindProperty("clips");
-        effectModulesProperty = serializedObject.FindProperty("effectModules");
 
-        CacheModuleTypes();
-    }
+        var root = new VisualElement();
 
-    private static void CacheModuleTypes()
-    {
-        if (cachedModuleTypes != null)
-            return;
+        // Clips property
+        var clipsProperty = serializedObject.FindProperty("clips");
+        var clipsField = new PropertyField(clipsProperty);
+        clipsField.Bind(serializedObject);
+        root.Add(clipsField);
 
-        var types = new List<Type>();
-        foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+        // Spacer
+        root.Add(new VisualElement { style = { height = 10 } });
+
+        // Effect Modules header
+        var header = new Label("Effect Modules");
+        header.style.unityFontStyleAndWeight = FontStyle.Bold;
+        header.style.marginTop = 10;
+        header.style.marginBottom = 5;
+        root.Add(header);
+
+        // Modules container
+        modulesContainer = new VisualElement();
+        root.Add(modulesContainer);
+
+        RebuildModulesList();
+
+        // Add Module button
+        var addButton = new Button();
+        addButton.clicked += () =>
         {
-            try
+            L3TypeTreeWindow.OpenForType(typeof(Sfx), addButton.worldBound.position, (type) =>
             {
-                foreach (var type in assembly.GetTypes())
-                {
-                    if (type.IsSubclassOf(typeof(SfxEffectModule)) && !type.IsAbstract)
-                    {
-                        types.Add(type);
-                    }
-                }
-            }
-            catch (System.Reflection.ReflectionTypeLoadException)
-            {
-                // Some assemblies may not be loadable
-            }
-        }
+                AddModule(type);
+                RebuildModulesList();
+            });
+        };
+        addButton.focusable = false;
+        addButton.text = "Add Module";
+        addButton.style.height = 32;
+        addButton.style.marginTop = 24;
+        root.Add(addButton);
 
-        cachedModuleTypes = types.OrderBy(t => t.Name).ToArray();
-        cachedModuleTypeNames = cachedModuleTypes.Select(t => t.Name).ToArray();
+        return root;
     }
 
-    public override void OnInspectorGUI()
+    private void RebuildModulesList()
     {
-        serializedObject.Update();
-
-        EditorGUILayout.PropertyField(clipsProperty, true);
-        EditorGUILayout.Space();
-        EditorGUILayout.LabelField("Effect Modules", EditorStyles.boldLabel);
-
+        modulesContainer.Clear();
         CleanupNullModules();
-        DrawModulesList();
 
-        EditorGUILayout.Space();
-        DrawAddModuleUI();
+        var effectModulesProperty = serializedObject.FindProperty("effectModules");
 
-        serializedObject.ApplyModifiedProperties();
-    }
-
-    private void DrawModulesList()
-    {
         for (int i = 0; i < effectModulesProperty.arraySize; i++)
         {
             var moduleProperty = effectModulesProperty.GetArrayElementAtIndex(i);
@@ -79,71 +73,79 @@ public class SfxEditor : Editor
             if (module == null)
                 continue;
 
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            int capturedIndex = i;
 
-            EditorGUILayout.BeginHorizontal();
+            // Module container
+            var moduleBox = new VisualElement();
+            moduleBox.style.backgroundColor = new Color(0.2f, 0.2f, 0.2f, 0.3f);
+            moduleBox.style.borderTopLeftRadius = 4;
+            moduleBox.style.borderTopRightRadius = 4;
+            moduleBox.style.borderBottomLeftRadius = 4;
+            moduleBox.style.borderBottomRightRadius = 4;
+            moduleBox.style.paddingTop = 6;
+            moduleBox.style.paddingBottom = 6;
+            moduleBox.style.paddingLeft = 8;
+            moduleBox.style.paddingRight = 8;
+            moduleBox.style.marginBottom = 4;
 
-            module.enabled = EditorGUILayout.ToggleLeft(
-                module.GetType().Name,
-                module.enabled,
-                EditorStyles.boldLabel
-            );
+            // Header row
+            var headerRow = new VisualElement();
+            headerRow.style.flexDirection = FlexDirection.Row;
+            headerRow.style.justifyContent = Justify.SpaceBetween;
+            headerRow.style.alignItems = Align.Center;
 
-            GUILayout.FlexibleSpace();
-
-            if (GUILayout.Button("X", GUILayout.Width(24)))
+            // Enabled toggle + name
+            var moduleSerializedObject = new SerializedObject(module);
+            var enabledProperty = moduleSerializedObject.FindProperty("enabled");
+            var enabledToggle = new Toggle();
+            enabledToggle.value = enabledProperty.boolValue;
+            enabledToggle.RegisterValueChangedCallback(evt =>
             {
-                RemoveModule(i);
-                break;
-            }
+                moduleSerializedObject.Update();
+                enabledProperty.boolValue = evt.newValue;
+                moduleSerializedObject.ApplyModifiedProperties();
+            });
 
-            EditorGUILayout.EndHorizontal();
+            var nameLabel = new Label(module.GetType().Name);
+            nameLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
+            nameLabel.style.marginLeft = 4;
 
-            EditorGUI.indentLevel++;
-            SerializedObject moduleSerializedObject = new SerializedObject(module);
-            moduleSerializedObject.Update();
+            var leftGroup = new VisualElement();
+            leftGroup.style.flexDirection = FlexDirection.Row;
+            leftGroup.style.alignItems = Align.Center;
+            leftGroup.Add(enabledToggle);
+            leftGroup.Add(nameLabel);
 
-            SerializedProperty prop = moduleSerializedObject.GetIterator();
-            prop.NextVisible(true);
+            // Remove button
+            var removeButton = new Button(() =>
+            {
+                RemoveModule(capturedIndex);
+                RebuildModulesList();
+            });
+            removeButton.text = "X";
+            removeButton.style.width = 24;
+            removeButton.style.height = 20;
+
+            headerRow.Add(leftGroup);
+            headerRow.Add(removeButton);
+            moduleBox.Add(headerRow);
+
+            // Module properties (excluding 'enabled' and 'm_Script')
+            var prop = moduleSerializedObject.GetIterator();
+            prop.NextVisible(true); // Skip m_Script
             while (prop.NextVisible(false))
             {
                 if (prop.name != "enabled")
                 {
-                    EditorGUILayout.PropertyField(prop, true);
+                    var field = new PropertyField(prop);
+                    field.Bind(moduleSerializedObject);
+                    field.style.marginTop = 4;
+                    moduleBox.Add(field);
                 }
             }
 
-            moduleSerializedObject.ApplyModifiedProperties();
-            EditorGUI.indentLevel--;
-
-            EditorGUILayout.EndVertical();
-            EditorGUILayout.Space(2);
+            modulesContainer.Add(moduleBox);
         }
-    }
-
-    private void DrawAddModuleUI()
-    {
-        EditorGUILayout.BeginHorizontal();
-
-        if (cachedModuleTypes == null || cachedModuleTypes.Length == 0)
-        {
-            EditorGUILayout.HelpBox("No SfxEffectModule types found.", MessageType.Info);
-        }
-        else
-        {
-            selectedModuleIndex = EditorGUILayout.Popup(
-                "Add Module",
-                selectedModuleIndex,
-                cachedModuleTypeNames
-            );
-
-            if (GUILayout.Button("Add", GUILayout.Width(60)))
-            {
-                AddModule(cachedModuleTypes[selectedModuleIndex]);
-            }
-        }
-
-        EditorGUILayout.EndHorizontal();
     }
 
     private void AddModule(Type moduleType)
@@ -154,6 +156,7 @@ public class SfxEditor : Editor
         AssetDatabase.AddObjectToAsset(newModule, sfx);
 
         serializedObject.Update();
+        var effectModulesProperty = serializedObject.FindProperty("effectModules");
         effectModulesProperty.arraySize++;
         effectModulesProperty.GetArrayElementAtIndex(effectModulesProperty.arraySize - 1)
             .objectReferenceValue = newModule;
@@ -167,6 +170,7 @@ public class SfxEditor : Editor
     {
         serializedObject.Update();
 
+        var effectModulesProperty = serializedObject.FindProperty("effectModules");
         var moduleProperty = effectModulesProperty.GetArrayElementAtIndex(index);
         var module = moduleProperty.objectReferenceValue;
 
@@ -186,6 +190,9 @@ public class SfxEditor : Editor
 
     private void CleanupNullModules()
     {
+        serializedObject.Update();
+        var effectModulesProperty = serializedObject.FindProperty("effectModules");
+
         for (int i = effectModulesProperty.arraySize - 1; i >= 0; i--)
         {
             if (effectModulesProperty.GetArrayElementAtIndex(i).objectReferenceValue == null)
@@ -193,5 +200,7 @@ public class SfxEditor : Editor
                 effectModulesProperty.DeleteArrayElementAtIndex(i);
             }
         }
+
+        serializedObject.ApplyModifiedProperties();
     }
 }

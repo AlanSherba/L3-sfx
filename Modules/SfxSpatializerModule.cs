@@ -1,5 +1,7 @@
+using Less3.TypeTree;
 using UnityEngine;
 
+[TypeTreeMenu(typeof(Sfx), "Spatializer")]
 public class SfxSpatializerModule : SfxEffectModule
 {
     [Header("Spatial Blend")]
